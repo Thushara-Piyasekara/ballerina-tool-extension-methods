@@ -16,8 +16,14 @@ import io.ballerina.tools.diagnostics.DiagnosticProperty;
 import io.ballerina.tools.diagnostics.DiagnosticPropertyKind;
 import picocli.CommandLine;
 
+import java.io.BufferedReader;
 import java.io.File;
+import java.io.IOException;
+import java.io.InputStream;
+import java.io.InputStreamReader;
 import java.io.PrintStream;
+import java.lang.reflect.InvocationTargetException;
+import java.nio.charset.StandardCharsets;
 import java.nio.file.Path;
 import java.nio.file.Paths;
 import java.util.ArrayList;
@@ -78,9 +84,8 @@ public class BridgeCommand implements BLauncherCmd {
     public void execute() {
         // if bal scan --help is passed
         if (helpFlag) {
-            StringBuilder builder = new StringBuilder();
-            builder.append("Tool for linking Ballerina compiler plugins\n\n");
-            this.outputStream.println(builder);
+            StringBuilder builder = helpMessage();
+            outputStream.println(builder);
             return;
         }
 
@@ -154,11 +159,26 @@ public class BridgeCommand implements BLauncherCmd {
                         properties.forEach(diagnosticProperty -> {
                             // Validating the type of diagnostic property
                             if (diagnosticProperty.kind().equals(DiagnosticPropertyKind.OTHER)) {
-                                // Casting the retrieved issue from the diagnostics
-                                Issue externalIssue = (Issue) diagnosticProperty.value();
+                                // Creating issue through reflection
+                                Object pluginIssue = diagnosticProperty.value();
+                                try {
+                                    Issue externalIssue = new Issue(
+                                            (Integer) pluginIssue.getClass().getMethod("getStartLine").invoke(pluginIssue),
+                                            (Integer) pluginIssue.getClass().getMethod("getStartLineOffset").invoke(pluginIssue),
+                                            (Integer) pluginIssue.getClass().getMethod("getEndLine").invoke(pluginIssue),
+                                            (Integer) pluginIssue.getClass().getMethod("getEndLineOffset").invoke(pluginIssue),
+                                            pluginIssue.getClass().getMethod("getRuleID").invoke(pluginIssue).toString(),
+                                            pluginIssue.getClass().getMethod("getMessage").invoke(pluginIssue).toString(),
+                                            pluginIssue.getClass().getMethod("getIssueType").invoke(pluginIssue).toString(),
+                                            pluginIssue.getClass().getMethod("getFileName").invoke(pluginIssue).toString(),
+                                            pluginIssue.getClass().getMethod("getReportedFilePath").invoke(pluginIssue).toString()
+                                    );
 
-                                // Adding the retrieved diagnostic from compiler plugin to the tool
-                                issues.add(externalIssue);
+                                    // Adding the retrieved diagnostic from compiler plugin to the tool
+                                    issues.add(externalIssue);
+                                } catch (IllegalAccessException | InvocationTargetException | NoSuchMethodException e) {
+                                    throw new RuntimeException(e);
+                                }
                             }
                         });
                     }
@@ -170,6 +190,27 @@ public class BridgeCommand implements BLauncherCmd {
         Gson gson = new GsonBuilder().setPrettyPrinting().create();
         JsonArray issuesAsJson = gson.toJsonTree(issues).getAsJsonArray();
         outputStream.println(gson.toJson(issuesAsJson));
+    }
+
+    private StringBuilder helpMessage() {
+        InputStream inputStream = BridgeCommand.class.getResourceAsStream("/cli-help/ballerina-bridge.help");
+        StringBuilder builder = new StringBuilder();
+        if (inputStream != null) {
+            try (
+                    InputStreamReader inputStreamReader = new InputStreamReader(inputStream, StandardCharsets.UTF_8);
+                    BufferedReader br = new BufferedReader(inputStreamReader)
+            ) {
+                String content = br.readLine();
+                builder.append(content);
+                while ((content = br.readLine()) != null) {
+                    builder.append("\n").append(content);
+                }
+            } catch (IOException ex) {
+                builder.append("Help text is not available.");
+                throw new RuntimeException(ex);
+            }
+        }
+        return builder;
     }
 
     public String checkPath() {

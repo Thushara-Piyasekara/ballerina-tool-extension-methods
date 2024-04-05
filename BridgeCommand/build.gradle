@@ -5,6 +5,12 @@ plugins {
 
     // For using the ballerina java project API
     id 'java-library'
+
+    // For coverage results
+    id 'jacoco'
+
+    // For SonarCloud Analysis
+    id "org.sonarqube" version "4.4.1.3373"
 }
 
 group = 'org.wso2.ballerina'
@@ -53,6 +59,13 @@ dependencies {
 
     // Required for determining the platform a java process is running on
     implementation group: 'org.apache.commons', name: 'commons-lang3', version: '3.0'
+
+    // Required dependencies for jacoco
+    implementation group: 'org.jacoco', name: 'org.jacoco.core', version: "${project.jacocoVersion}"
+    implementation group: 'org.jacoco', name: 'org.jacoco.report', version: "${project.jacocoVersion}"
+
+    // Required dependencies for running scan tool tests
+    testImplementation group: 'org.testng', name: 'testng', version: "${project.testngVersion}"
 }
 
 // Setting up the ballerina home property for the project
@@ -158,4 +171,50 @@ build {
     dependsOn updateTomlFiles
     dependsOn createBallerinaToolConfigFile
     dependsOn buildScanTool
+}
+
+// Adding tests
+tasks.test {
+    useTestNG() {
+        suites 'src/test/resources/testng.xml'
+    }
+}
+
+// Setting up for codecove
+def execFile;
+def classFileArray = []
+task copyExecFilesAndJavaClassFiles {
+    execFile = new File("${buildDir}/jacoco/test.exec")
+    if (execFile.exists()) {
+        fileTree("${buildDir}/classes").matching {
+            exclude '**/test/*'
+            exclude '**/module-info.class'
+        }.each { file -> classFileArray.push(file) }
+    }
+}
+
+task createCodeCoverageReport(type: JacocoReport) {
+    executionData file(execFile)
+    additionalClassDirs files(classFileArray)
+
+    reports {
+        xml.required = true
+        html.required = true
+        xml.destination new File("${rootDir}/.jacoco/reports/jacoco/report.xml")
+        html.destination new File("${rootDir}/.jacoco/reports/jacoco/report.html")
+    }
+    onlyIf = {
+        true
+    }
+}
+
+createCodeCoverageReport.dependsOn(copyExecFilesAndJavaClassFiles)
+
+// Setting up SonarCloud
+sonar {
+    properties {
+        property "sonar.projectKey", "Xenowa_ballerina-tool-extension-methods"
+        property "sonar.organization", "xenowa"
+        property "sonar.host.url", "https://sonarcloud.io"
+    }
 }
