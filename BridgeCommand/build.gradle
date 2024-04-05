@@ -216,5 +216,9 @@ sonar {
         property "sonar.projectKey", "Xenowa_ballerina-tool-extension-methods"
         property "sonar.organization", "xenowa"
         property "sonar.host.url", "https://sonarcloud.io"
+
+        // Additional properties
+        // To Add test coverage
+        property "sonar.coverage.jacoco.xmlReportPaths", "${rootDir}/.jacoco/reports/jacoco/*.xml"
     }
 }
