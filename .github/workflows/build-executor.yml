@@ -38,6 +38,16 @@ jobs:
           packagePAT: ${{ secrets.GITHUB_TOKEN }}
         run: ./gradlew build
 
+      - name: Generate Jacoco report
+        run: ./gradlew createCodeCoverageReport
+
+      - name: Generate Codecov Report
+        uses: codecov/codecov-action@v3
+        with:
+          token: ${{ secrets.CODECOV_TOKEN }}
+          files: ./.jacoco/reports/jacoco/report.xml
+          slug: Xenowa/ballerina-tool-extension-methods
+
       - name: Cache SonarCloud packages for faster analysis
         uses: actions/cache@v3
         with:
@@ -50,16 +60,6 @@ jobs:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}  # Needed to get PR information, if any
           SONAR_TOKEN: ${{ secrets.SONAR_TOKEN }}
         run: ./gradlew sonar --info
-
-      - name: Generate Jacoco report
-        run: ./gradlew createCodeCoverageReport
-
-      - name: Generate Codecov Report
-        uses: codecov/codecov-action@v3
-        with:
-          token: ${{ secrets.CODECOV_TOKEN }}
-          files: ./.jacoco/reports/jacoco/report.xml
-          slug: Xenowa/ballerina-tool-extension-methods
 
   windows_build:
     name: Build
@@ -89,6 +89,16 @@ jobs:
           packagePAT: ${{ secrets.GITHUB_TOKEN }}
         run: ./gradlew build
 
+      - name: Generate Jacoco report
+        run: ./gradlew createCodeCoverageReport
+
+      - name: Generate Codecov Report
+        uses: codecov/codecov-action@v3
+        with:
+          token: ${{ secrets.CODECOV_TOKEN }}
+          files: ./.jacoco/reports/jacoco/report.xml
+          slug: Xenowa/ballerina-tool-extension-methods
+
       - name: Cache SonarCloud packages for faster analysis
         uses: actions/cache@v3
         with:
@@ -101,13 +111,3 @@ jobs:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}  # Needed to get PR information, if any
           SONAR_TOKEN: ${{ secrets.SONAR_TOKEN }}
         run: ./gradlew sonar --info
-
-      - name: Generate Jacoco report
-        run: ./gradlew createCodeCoverageReport
-
-      - name: Generate Codecov Report
-        uses: codecov/codecov-action@v3
-        with:
-          token: ${{ secrets.CODECOV_TOKEN }}
-          files: ./.jacoco/reports/jacoco/report.xml
-          slug: Xenowa/ballerina-tool-extension-methods
