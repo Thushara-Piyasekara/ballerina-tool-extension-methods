@@ -1,3 +1,6 @@
+[![Quality gate](https://sonarcloud.io/api/project_badges/quality_gate?project=Xenowa_ballerina-tool-extension-methods)](https://sonarcloud.io/summary/new_code?id=Xenowa_ballerina-tool-extension-methods)
+[![codecov](https://codecov.io/gh/Xenowa/ballerina-tool-extension-methods/graph/badge.svg?token=CMYX8SZFDK)](https://codecov.io/gh/Xenowa/ballerina-tool-extension-methods)
+
 # Architecture: Compiler Diagnostics based Approach
 
 ```mermaid

@@ -4,6 +4,7 @@ on:
   push:
     branches:
       - compiler-diagnostics-based-approach-with-coverage
+  workflow_dispatch:
 
 jobs:
   ubuntu_build:
@@ -46,7 +47,6 @@ jobs:
         with:
           token: ${{ secrets.CODECOV_TOKEN }}
           files: ./.jacoco/reports/jacoco/report.xml
-          slug: Xenowa/ballerina-tool-extension-methods
 
       - name: Cache SonarCloud packages for faster analysis
         uses: actions/cache@v3
@@ -62,7 +62,7 @@ jobs:
         run: ./gradlew sonar --info
 
   windows_build:
-    name: Build
+    name: Build with tests on Windows
     runs-on: windows-latest
     concurrency:
       group: ${{ github.head_ref }}-windows
@@ -88,26 +88,3 @@ jobs:
           packageUser: ${{ github.actor }}
           packagePAT: ${{ secrets.GITHUB_TOKEN }}
         run: ./gradlew build
-
-      - name: Generate Jacoco report
-        run: ./gradlew createCodeCoverageReport
-
-      - name: Generate Codecov Report
-        uses: codecov/codecov-action@v3
-        with:
-          token: ${{ secrets.CODECOV_TOKEN }}
-          files: ./.jacoco/reports/jacoco/report.xml
-          slug: Xenowa/ballerina-tool-extension-methods
-
-      - name: Cache SonarCloud packages for faster analysis
-        uses: actions/cache@v3
-        with:
-          path: ~/.sonar/cache
-          key: ${{ runner.os }}-sonar
-          restore-keys: ${{ runner.os }}-sonar
-
-      - name: Generate SonarCloud Report
-        env:
-          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}  # Needed to get PR information, if any
-          SONAR_TOKEN: ${{ secrets.SONAR_TOKEN }}
-        run: ./gradlew sonar --info
