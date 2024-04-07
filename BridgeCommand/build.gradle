@@ -1,5 +1,7 @@
 import org.apache.tools.ant.taskdefs.condition.Os
 
+import java.nio.file.Paths
+
 plugins {
     id 'java'
 
@@ -174,7 +176,9 @@ build {
 }
 
 // Adding tests
-tasks.test {
+test {
+    systemProperty "ballerina.home", Paths.get(System.getenv("BALLERINA_HOME")).resolve("distributions")
+            .resolve("ballerina-${ballerinaVersion}").toString()
     useTestNG() {
         suites 'src/test/resources/testng.xml'
     }

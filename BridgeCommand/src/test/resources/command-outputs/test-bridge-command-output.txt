@@ -1,0 +1,24 @@
+[
+  {
+    "startLine": 0,
+    "startLineOffset": 0,
+    "endLine": 0,
+    "endLineOffset": 0,
+    "ruleID": "S107",
+    "message": "Local issue",
+    "issueType": "INTERNAL_CHECK_VIOLATION",
+    "fileName": "test_bridge_command/main.bal",
+    "reportedFilePath": "C:\\Users\\Tharana Wanigaratne\\Desktop\\BalWorkFile\\Miscellaneous\\ballerina-tool-extension-methods\\BridgeCommand\\src\\test\\resources\\test-resources\\test-bridge-command\\main.bal"
+  },
+  {
+    "startLine": 0,
+    "startLineOffset": 0,
+    "endLine": 0,
+    "endLineOffset": 0,
+    "ruleID": "B1001",
+    "message": "External Issue",
+    "issueType": "CUSTOM_CHECK_VIOLATION",
+    "fileName": "test_bridge_command/main.bal",
+    "reportedFilePath": "C:\\Users\\Tharana Wanigaratne\\Desktop\\BalWorkFile\\Miscellaneous\\ballerina-tool-extension-methods\\BridgeCommand\\src\\test\\resources\\test-resources\\test-bridge-command\\main.bal"
+  }
+]
