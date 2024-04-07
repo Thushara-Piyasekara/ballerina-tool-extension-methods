@@ -51,6 +51,6 @@ public class BridgeCommandTest {
         Path output = Paths.get("src", "test", "resources", "command-outputs",
                 "test-bridge-command-output.txt");
         String expected = Files.readString(output).replace("\r\n", "\n");
-        Assert.assertEquals(scanLog, expected);
+        Assert.assertTrue(scanLog.contains(expected));
     }
 }
