@@ -66,4 +66,4 @@ The following software should be installed locally
 3. Navigate to the test-bridge-command directory
 
 4. Run "bal bridge" command
-Testing2
+Testing3
