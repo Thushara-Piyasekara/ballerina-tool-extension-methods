@@ -69,3 +69,4 @@ The following software should be installed locally
 
 Scans-Test-Attempt-1
 Scans-Test-Attempt-2
+Scans-Test-Attempt-3 (Automatic analysis on SonarCloud enabled)
