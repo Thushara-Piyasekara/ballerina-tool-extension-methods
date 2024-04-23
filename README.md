@@ -68,3 +68,4 @@ The following software should be installed locally
 4. Run "bal bridge" command
 
 Scans-Test-Attempt-1
+Scans-Test-Attempt-2
